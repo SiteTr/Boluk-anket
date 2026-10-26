@@ -17,7 +17,7 @@
     <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <span class="font-bold text-lg tracking-tight">Bölük Anket</span>
-        <span id="dbStatusBadge" class="text-[11px] px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800">Kurulum Bekleniyor</span>
+        <span id="dbStatusBadge" class="text-[11px] px-2 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-800">Canlı Bağlantı Aktif</span>
       </div>
       <div class="flex gap-2">
         <button onclick="showView('pollsView')" class="px-3 py-1.5 text-sm font-medium rounded-lg hover:bg-slate-100">Anketler</button>
@@ -27,12 +27,6 @@
   </header>
 
   <main class="max-w-4xl mx-auto px-4 mt-6">
-
-    <!-- Firebase Kurulum Uyarısı (Sadece DB bağlı değilse görünür) -->
-    <div id="setupBanner" class="hidden mb-6 bg-amber-50 border border-amber-300 rounded-xl p-4">
-      <h3 class="font-bold text-amber-900 text-sm mb-1">⚠️ Canlı Veritabanı (Firebase) Henüz Bağlanmadı</h3>
-      <p class="text-xs text-amber-800 mb-3">184 kişinin oylarının ortak toplanması için Firebase linkinizi girmeniz gerekiyor. Kıdemli Paneline girip <b>"Veritabanı Ayarı"</b> sekmesinden linkinizi kaydedin veya kodun en altındaki <code>FIREBASE_DB_URL</code> kısmına yapıştırın.</p>
-    </div>
 
     <!-- 1. ANKET LİSTESİ EKRANI -->
     <section id="pollsView" class="space-y-4">
@@ -45,15 +39,15 @@
 
     <!-- 2. OY VERME EKRANI -->
     <section id="voteView" class="hidden bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
-      <button onclick="showView('pollsView')" class="text-xs text-slate-500 hover:text-slate-900 mb-4 inline-block">← Anketlere Dön</button>
+      <button onclick="showView('pollsView')" class="text-xs text-slate-500 hover:text-slate-900 mb-4 inline-block font-medium">← Anketlere Dön</button>
       <h2 id="votePollTitle" class="text-xl font-bold mb-1"></h2>
       <p id="votePollDesc" class="text-sm text-slate-600 mb-5"></p>
 
       <div class="space-y-4">
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-500 mb-1">1. Apolet No veya İsim Ara</label>
-          <input type="text" id="voterSearch" oninput="filterVoterSelect()" placeholder="Örn: 1005 veya Ahmet..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
-          <select id="voterSelect" size="4" class="w-full mt-2 border border-slate-200 rounded-lg p-2 text-sm bg-slate-50 focus:outline-none"></select>
+          <input type="text" id="voterSearch" oninput="filterVoterSelect()" placeholder="Örn: 184 veya Abdullah..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-600">
+          <select id="voterSelect" size="5" class="w-full mt-2 border border-slate-200 rounded-lg p-2 text-sm bg-slate-50 focus:outline-none"></select>
         </div>
 
         <div>
@@ -72,7 +66,7 @@
         <button onclick="switchAdminTab('tabControl')" id="btn_tabControl" class="pb-2.5 tab-active whitespace-nowrap">Katılım Kontrolü</button>
         <button onclick="switchAdminTab('tabCreate')" id="btn_tabCreate" class="pb-2.5 text-slate-500 whitespace-nowrap">Yeni Anket Aç</button>
         <button onclick="switchAdminTab('tabRoster')" id="btn_tabRoster" class="pb-2.5 text-slate-500 whitespace-nowrap">Personel Listesi (184)</button>
-        <button onclick="switchAdminTab('tabFirebase')" id="btn_tabFirebase" class="pb-2.5 text-slate-500 whitespace-nowrap">Veritabanı & Şifre</button>
+        <button onclick="switchAdminTab('tabSettings')" id="btn_tabSettings" class="pb-2.5 text-slate-500 whitespace-nowrap">Şifre & Ayar</button>
       </div>
 
       <!-- Sekme 1: Katılım Kontrolü (Renkli Liste) -->
@@ -80,7 +74,7 @@
         <div class="bg-white border border-slate-200 rounded-xl p-4 space-y-4">
           <div class="flex flex-col sm:flex-row gap-3 justify-between">
             <select id="adminPollSelect" onchange="renderAdminControl()" class="border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold flex-1"></select>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
               <button onclick="copyPollLink()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold">🔗 Link Kopyala</button>
               <button onclick="copyMissingWhatsApp()" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold">📋 Eksikleri Kopyala (WP)</button>
               <button onclick="exportCSV()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold">📥 Excel</button>
@@ -105,7 +99,7 @@
           <input type="text" id="adminSearchInput" oninput="renderAdminControl()" placeholder="Apolet veya isim ara..." class="w-full sm:w-60 border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white">
         </div>
 
-        <p class="text-xs text-slate-500">💡 İpucu: Kişinin kartına tıklayarak kıdemli olarak manuel oy atayabilir veya silebilirsiniz.</p>
+        <p class="text-xs text-slate-500">💡 Kişinin kutusuna tıklayarak kıdemli olarak manuel oy atayabilir veya mevcut oyunu silebilirsiniz.</p>
 
         <!-- Renkli Personel Kartları -->
         <div id="adminPersonnelGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2"></div>
@@ -135,77 +129,243 @@ Katılmıyorum
       <div id="tabRoster" class="hidden bg-white border border-slate-200 rounded-xl p-5 space-y-4">
         <div class="flex justify-between items-center">
           <div>
-            <h3 class="font-bold text-base">Bölük Personel Listesi</h3>
-            <p class="text-xs text-slate-500">Her satıra <b>ApoletNo İsim Soyisim</b> gelecek şekilde yapıştırın.</p>
+            <h3 class="font-bold text-base">Bölük Personel Listesi (184 Kişi)</h3>
+            <p class="text-xs text-slate-500">Gönderdiğiniz 184 kişilik kadro sisteme başarıyla işlenmiştir.</p>
           </div>
-          <button onclick="resetDemoRoster()" class="text-xs text-blue-600 hover:underline">184 Kişilik Şablon Doldur</button>
         </div>
         <textarea id="rosterTextarea" rows="12" class="w-full border border-slate-300 rounded-lg p-3 text-xs font-mono"></textarea>
-        <button onclick="saveRoster()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-lg text-sm">Listeyi Kaydet ve Canlıya Gönder</button>
+        <button onclick="saveRoster()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-5 py-2.5 rounded-lg text-sm">Listeyi Güncelle</button>
       </div>
 
-      <!-- Sekme 4: Firebase & Şifre Ayarları -->
-      <div id="tabFirebase" class="hidden bg-white border border-slate-200 rounded-xl p-5 space-y-5">
+      <!-- Sekme 4: Şifre & Veritabanı Ayarları -->
+      <div id="tabSettings" class="hidden bg-white border border-slate-200 rounded-xl p-5 space-y-5">
         <div>
-          <h3 class="font-bold text-base mb-1">🔥 Firebase Canlı Veritabanı Bağlantısı</h3>
-          <p class="text-xs text-slate-500 mb-3">Firebase Realtime Database ekranından aldığınız <code>https://....firebaseio.com/</code> veya <code>https://....firebasedatabase.app/</code> linkini aşağıya yapıştırın.</p>
-          <input type="text" id="firebaseInputUrl" placeholder="https://boluk-anket-default-rtdb.firebaseio.com/" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono">
-          <button onclick="saveFirebaseUrl()" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-xs">Veritabanını Bağla ve Senkronize Et</button>
+          <h3 class="font-bold text-base mb-1">🔑 Kıdemli Panel Şifresi</h3>
+          <input type="text" id="adminPassInput" placeholder="Yeni şifre yazın" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <button onclick="saveAdminPass()" class="ml-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-lg text-xs">Şifreyi Güncelle</button>
         </div>
         <hr>
         <div>
-          <h3 class="font-bold text-base mb-1">🔑 Kıdemli Panel Şifresi</h3>
-          <input type="text" id="adminPassInput" placeholder="Yeni şifre" class="border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <button onclick="saveAdminPass()" class="ml-2 bg-slate-800 text-white font-semibold px-4 py-2 rounded-lg text-xs">Şifreyi Güncelle</button>
+          <h3 class="font-bold text-base mb-1">🔥 Bağlı Veritabanı Adresi</h3>
+          <input type="text" id="firebaseInputUrl" class="w-full border border-slate-200 bg-slate-50 rounded-lg px-3 py-2 text-xs font-mono text-slate-600" readonly>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- Bildirim Toast -->
+  <!-- Bildirim Kutusu -->
   <div id="toast" class="fixed bottom-4 right-4 hidden bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg z-50"></div>
 
   <script>
-    /*************************************************************************
-     * ÖNEMLİ: Firebase linkinizi aldıktan sonra aşağıdaki tırnak içine 
-     * yapıştırırsanız, linke tıklayan herkes otomatik olarak o veritabanına bağlanır!
-     *************************************************************************/
-    const SABIT_FIREBASE_URL = ""; // Örn: "https://boluk-anket-default-rtdb.firebaseio.com"
+    const SABIT_FIREBASE_URL = "https://boluk-anket-default-rtdb.firebaseio.com";
 
-    let dbUrl = SABIT_FIREBASE_URL || localStorage.getItem('boluk_firebase_url') || "";
-    let adminPass = localStorage.getItem('boluk_admin_pass') || "1234";
+    let dbUrl = SABIT_FIREBASE_URL;
+    let adminPass = "1234";
     let adminUnlocked = false;
     let adminFilter = 'all';
     let activePollId = null;
 
     let appData = {
+      adminPass: "1234",
       personnel: [],
       polls: []
     };
 
-    // 184 Kişilik Varsayılan Liste Üretici
-    function generateDefault184() {
-      const list = [];
-      for (let i = 1; i <= 184; i++) {
-        list.push({ apolet: String(1000 + i), name: `Personel ${i}` });
-      }
-      return list;
-    }
+    // Gönderdiğiniz 184 Kişilik Gerçek Liste
+    const defaultRealPersonnel = [
+      { apolet: "1", name: "İsmet Mutlu FAKİR" },
+      { apolet: "2", name: "İlker ÖZTÜRK" },
+      { apolet: "3", name: "Hakan ÇELİK" },
+      { apolet: "4", name: "Salih Yiğit EVEZ" },
+      { apolet: "5", name: "Resul KULAK" },
+      { apolet: "6", name: "Ramazan DENİZ" },
+      { apolet: "7", name: "Alper BAŞCI" },
+      { apolet: "8", name: "İsmail GENÇ" },
+      { apolet: "9", name: "Vefa DENİZHAN" },
+      { apolet: "10", name: "Bekir İlker ERDEM" },
+      { apolet: "11", name: "Azmi KOÇ" },
+      { apolet: "12", name: "Hüseyin ÇAPRAZ" },
+      { apolet: "13", name: "Köksal BAL" },
+      { apolet: "14", name: "Yakup KILIÇ" },
+      { apolet: "15", name: "Harun DENİZ" },
+      { apolet: "16", name: "Aykut MUTLU" },
+      { apolet: "17", name: "Muhammet İkbal DOĞAN" },
+      { apolet: "18", name: "Ali KILIÇ" },
+      { apolet: "19", name: "Sefa KARA" },
+      { apolet: "20", name: "Adem TURAN" },
+      { apolet: "21", name: "Mehmet SAKMAN" },
+      { apolet: "22", name: "Muhammed İNCİR" },
+      { apolet: "23", name: "Ali TÜRK" },
+      { apolet: "24", name: "Melih AYDIN" },
+      { apolet: "25", name: "Abdulgani AKBAŞ" },
+      { apolet: "26", name: "Metin NESNE" },
+      { apolet: "27", name: "Emir BESTEL" },
+      { apolet: "28", name: "Hasan ÖZCAN" },
+      { apolet: "29", name: "Mücahit DURDU" },
+      { apolet: "30", name: "Enes AKSU" },
+      { apolet: "31", name: "Yasin ŞERAS" },
+      { apolet: "32", name: "Muhiddin GÜRSEL" },
+      { apolet: "33", name: "Tayip ŞENYİĞİT" },
+      { apolet: "34", name: "Mehmet Sadık OKTAY" },
+      { apolet: "35", name: "Feridun ALBAKIR" },
+      { apolet: "36", name: "Mücahit YÜKSEL" },
+      { apolet: "37", name: "Sefa SAĞLAM" },
+      { apolet: "38", name: "Mustafa SALCI" },
+      { apolet: "39", name: "Kürşat CERRAH" },
+      { apolet: "40", name: "Muhammet Gökhan BURAKLAR" },
+      { apolet: "41", name: "Fuat TAT" },
+      { apolet: "42", name: "Muhammed Kasım ÖZCAN" },
+      { apolet: "43", name: "Uğur Ege ŞAHİN" },
+      { apolet: "44", name: "Burak ÖZEL" },
+      { apolet: "45", name: "Muhammet KARADENİZ" },
+      { apolet: "46", name: "Berk ATAR" },
+      { apolet: "47", name: "Burak DÜZENLİ" },
+      { apolet: "48", name: "Emre BOLAT" },
+      { apolet: "49", name: "Nazım ÇETİNEL" },
+      { apolet: "50", name: "Bilal BOZKURT" },
+      { apolet: "51", name: "Sezer ARSLAN" },
+      { apolet: "52", name: "Fatih BALI" },
+      { apolet: "53", name: "Muhammet Sait CAYMAZ" },
+      { apolet: "54", name: "Hasan SARITEPE" },
+      { apolet: "55", name: "Yusuf Ziya ÖZTÜRK" },
+      { apolet: "56", name: "Halis Berk YILDIZ" },
+      { apolet: "57", name: "Hasan Hüseyin SALMAN" },
+      { apolet: "58", name: "Mert KAYA" },
+      { apolet: "59", name: "Metin YILDIRIM" },
+      { apolet: "60", name: "Yavuz YILMAZ" },
+      { apolet: "61", name: "Gökhan ÖZDEMİR" },
+      { apolet: "62", name: "Selahi KONAK" },
+      { apolet: "63", name: "Cengiz CANYURT" },
+      { apolet: "64", name: "Yusuf İzzet YILDIRIM" },
+      { apolet: "65", name: "Samet YÜKSEL" },
+      { apolet: "66", name: "Umut ÇEKİN" },
+      { apolet: "67", name: "Arda ŞEN" },
+      { apolet: "68", name: "Muhammet Furkan BOZGEYİK" },
+      { apolet: "69", name: "Ekrem AYYILDIZ" },
+      { apolet: "70", name: "Orhan KURT" },
+      { apolet: "71", name: "Emre YİĞİT" },
+      { apolet: "72", name: "Ahmet EĞİLMEZ" },
+      { apolet: "73", name: "Faruk DERE" },
+      { apolet: "74", name: "İlyas İÇEN" },
+      { apolet: "75", name: "Abdulkadir SIĞIRCI" },
+      { apolet: "76", name: "Ahmet TAŞHANLI" },
+      { apolet: "77", name: "Halis ÇILDIR" },
+      { apolet: "78", name: "Ali Osman KAYA" },
+      { apolet: "79", name: "Davut BEGEÇ" },
+      { apolet: "80", name: "Halil Nurullah GÜNGÖR" },
+      { apolet: "81", name: "Tayfun BADURLUOĞLU" },
+      { apolet: "82", name: "Ensar Gökbuğra ALEMDAR" },
+      { apolet: "83", name: "Ömer Faruk BULUT" },
+      { apolet: "84", name: "Samet TOPKARA" },
+      { apolet: "85", name: "Muhammed Yusuf KOYUNCU" },
+      { apolet: "86", name: "Ali Can MEMİŞOĞLU" },
+      { apolet: "87", name: "Ahmet Turan ÇALÇİK" },
+      { apolet: "88", name: "Tunahan KAYADELEN" },
+      { apolet: "89", name: "Furkan GÖKSU" },
+      { apolet: "90", name: "Ümit SOYLU" },
+      { apolet: "91", name: "Rafet DEDE" },
+      { apolet: "92", name: "Yasin AKŞAHİN" },
+      { apolet: "93", name: "Mustafa AKGÜN" },
+      { apolet: "94", name: "Mustafa KARABOĞAZ" },
+      { apolet: "95", name: "Emre GEZER" },
+      { apolet: "96", name: "Oğuzhan KARAÇAY" },
+      { apolet: "97", name: "Mehmet YILDIRIM" },
+      { apolet: "98", name: "Mustafa BİÇİCİ" },
+      { apolet: "99", name: "Doğan DEMİR" },
+      { apolet: "100", name: "Volkan YILMAZ" },
+      { apolet: "101", name: "Muhammet ALTIAY" },
+      { apolet: "102", name: "Serhat HIRACI" },
+      { apolet: "103", name: "Vedat ÇİFTÇİ" },
+      { apolet: "104", name: "Mehmet Zeki SERTDEMİR" },
+      { apolet: "105", name: "Melih ALTAŞ" },
+      { apolet: "106", name: "İsmet İslam BAYBURT" },
+      { apolet: "107", name: "Atakan CEYHUN" },
+      { apolet: "108", name: "Servet KAMACI" },
+      { apolet: "109", name: "Alparslan YAYLACI" },
+      { apolet: "110", name: "Aykut GÜLER" },
+      { apolet: "111", name: "Burak KİŞİ" },
+      { apolet: "112", name: "Volkan ÖZKAN" },
+      { apolet: "113", name: "Sait Tunahan CENGİZ" },
+      { apolet: "114", name: "Kerem ÖZTÜRK" },
+      { apolet: "115", name: "Mehmet DEKTAŞ" },
+      { apolet: "116", name: "Emre Can ÜSTÜN" },
+      { apolet: "117", name: "İsmail Mert KARAGÖZOĞLU" },
+      { apolet: "118", name: "Sezer YOLCU" },
+      { apolet: "119", name: "Furkan KAYIKÇI" },
+      { apolet: "120", name: "Mustafa ÇAKIR" },
+      { apolet: "121", name: "Abdülbaki SERDAROĞLU" },
+      { apolet: "122", name: "Tuncay KÜÇÜK" },
+      { apolet: "123", name: "Ahmet ÖZBUNAR" },
+      { apolet: "124", name: "Muhammed Yaşar BASTEM" },
+      { apolet: "125", name: "Abdülkadir ERDURMUŞ" },
+      { apolet: "126", name: "Buğrahan GÜLER" },
+      { apolet: "127", name: "Barış BAŞ" },
+      { apolet: "128", name: "Yunus BABİ" },
+      { apolet: "129", name: "Talha TIĞCI" },
+      { apolet: "130", name: "Hüseyin TANRIKULU" },
+      { apolet: "131", name: "Eyüp KAYAALP" },
+      { apolet: "132", name: "Burakcan ERGÜL" },
+      { apolet: "133", name: "Emre ERDOĞAN" },
+      { apolet: "134", name: "Ömer GÖKTÜRK" },
+      { apolet: "135", name: "Ferhat AKSAKALLI" },
+      { apolet: "136", name: "Burak CEYLAN" },
+      { apolet: "137", name: "Yusuf BIYIKLI" },
+      { apolet: "138", name: "İbrahim Enes ÜNLÜ" },
+      { apolet: "139", name: "Mahmut TEK" },
+      { apolet: "140", name: "Yusuf MERAL" },
+      { apolet: "141", name: "Mutlucan IŞIK" },
+      { apolet: "142", name: "Sabri ŞEN" },
+      { apolet: "143", name: "Muhammed Enes DÖĞER" },
+      { apolet: "144", name: "Hazar Eren YÜZÜAK" },
+      { apolet: "145", name: "Mehmet TOPAL" },
+      { apolet: "146", name: "Ahmet ŞEN" },
+      { apolet: "147", name: "Samet ÖZBİÇİCİ" },
+      { apolet: "148", name: "Emre ALPASLAN" },
+      { apolet: "149", name: "Adem KARACA" },
+      { apolet: "150", name: "Muhammed Talha PİSTİL" },
+      { apolet: "151", name: "Hasan Bilgehan ÜN" },
+      { apolet: "152", name: "Akif ÇOMULU" },
+      { apolet: "153", name: "Serhat KAFA" },
+      { apolet: "154", name: "Mete ATEŞ" },
+      { apolet: "155", name: "Musa YILDIRIM" },
+      { apolet: "156", name: "Murat KAYA" },
+      { apolet: "157", name: "Salih TOSUN" },
+      { apolet: "158", name: "Yunus ORDU" },
+      { apolet: "159", name: "Güngör GÜNDİNÇ" },
+      { apolet: "160", name: "Adem ÇOLAK" },
+      { apolet: "161", name: "Turan YILDIRIM" },
+      { apolet: "162", name: "Berat KAYA" },
+      { apolet: "163", name: "Selçuk KAYIK" },
+      { apolet: "164", name: "Okan Yasin GÖMLEKSİZ" },
+      { apolet: "165", name: "Muharrem KABALAK" },
+      { apolet: "166", name: "Ahmet KAZI" },
+      { apolet: "167", name: "Semih HAYAL" },
+      { apolet: "168", name: "Ömürhan Halil DENİZ" },
+      { apolet: "169", name: "Haci Bekir DEMİREL" },
+      { apolet: "170", name: "Abdullah İhsan TİYEK" },
+      { apolet: "171", name: "Erkan PUL" },
+      { apolet: "172", name: "Abdulkadir KAPLAN" },
+      { apolet: "173", name: "Faruk GÜN" },
+      { apolet: "174", name: "Hüseyin YAKAR" },
+      { apolet: "175", name: "Sinan AÇIKGÖZ" },
+      { apolet: "176", name: "Burak ŞAYIK" },
+      { apolet: "177", name: "İrfan AĞDAĞ" },
+      { apolet: "178", name: "Hüseyin AKSÜT" },
+      { apolet: "179", name: "Furkan TEPELİ" },
+      { apolet: "180", name: "Burak ÇİV" },
+      { apolet: "181", name: "Serhat ARVAS" },
+      { apolet: "182", name: "Enes ÇAVAŞ" },
+      { apolet: "183", name: "Abdulkadir AY" },
+      { apolet: "184", name: "Abdullah ARVAS" }
+    ];
 
     // Başlangıç Yüklemesi
     async function initApp() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const dbParam = urlParams.get('db');
-      if (dbParam) {
-        dbUrl = decodeURIComponent(dbParam);
-        localStorage.setItem('boluk_firebase_url', dbUrl);
-      }
-
-      updateDbBadge();
+      document.getElementById('firebaseInputUrl').value = dbUrl;
       await fetchFromDatabase();
 
-      // URL'de özel anket linki varsa doğrudan onu aç
+      const urlParams = new URLSearchParams(window.location.search);
       const pollParam = urlParams.get('poll');
       if (pollParam && appData.polls.some(p => p.id === pollParam)) {
         openVoteView(pollParam);
@@ -213,69 +373,47 @@ Katılmıyorum
         renderPollsList();
       }
 
-      // Her 5 saniyede bir canlı veriyi kontrol et (Anlık Güncelleme)
       setInterval(() => {
-        if (dbUrl) fetchFromDatabase(true);
-      }, 5000);
+        fetchFromDatabase(true);
+      }, 4000);
     }
 
     function cleanDbUrl(url) {
-      if (!url) return "";
       let u = url.trim();
       if (u.endsWith('/')) u = u.slice(0, -1);
-      if (u.endsWith('.json')) u = u.replace('/bolukData.json', '').replace('.json', '');
       return u;
     }
 
-    function updateDbBadge() {
+    async function fetchFromDatabase(silent = false) {
       const badge = document.getElementById('dbStatusBadge');
-      const banner = document.getElementById('setupBanner');
-      if (dbUrl) {
+      try {
+        const res = await fetch(`${cleanDbUrl(dbUrl)}/bolukData.json`);
+        if (!res.ok) throw new Error("Bağlantı reddedildi");
+        const data = await res.json();
+
+        if (data && data.personnel && data.personnel.length > 0) {
+          appData.personnel = data.personnel;
+          appData.polls = data.polls || [];
+          appData.adminPass = data.adminPass || "1234";
+          adminPass = appData.adminPass;
+          localStorage.setItem('boluk_backup', JSON.stringify(appData));
+        } else {
+          loadLocalOrInit();
+          await pushToDatabase();
+        }
+
         badge.textContent = "Canlı Bağlantı Aktif";
         badge.className = "text-[11px] px-2 py-0.5 rounded-full font-medium bg-emerald-100 text-emerald-800";
-        banner.classList.add('hidden');
-      } else {
-        badge.textContent = "Yerel Mod (Firebase Yok)";
+      } catch (err) {
+        badge.textContent = "Bağlantı Bekleniyor";
         badge.className = "text-[11px] px-2 py-0.5 rounded-full font-medium bg-amber-100 text-amber-800";
-        banner.classList.remove('hidden');
-      }
-    }
-
-    // Veritabanından Veri Çek (Firebase REST API)
-    async function fetchFromDatabase(silent = false) {
-      if (dbUrl) {
-        try {
-          const res = await fetch(`${cleanDbUrl(dbUrl)}/bolukData.json`);
-          const data = await res.json();
-          if (data && data.personnel) {
-            appData.personnel = data.personnel || [];
-            appData.polls = data.polls || [];
-            localStorage.setItem('boluk_backup', JSON.stringify(appData));
-          } else {
-            // Firebase boşsa ilk veriyi oluşturup gönder
-            loadLocalOrInit();
-            await pushToDatabase();
-          }
-        } catch (err) {
-          if (!silent) showToast("Veritabanı bağlantı hatası, yerel veri kullanılıyor.");
-          loadLocalOrInit();
-        }
-      } else {
-        loadLocalOrInit();
+        if (!silent) loadLocalOrInit();
       }
 
       document.getElementById('totalPersonnelBadge').textContent = `Toplam: ${appData.personnel.length} Personel`;
-      if (!silent) {
-        renderPollsList();
-        if (!document.getElementById('adminView').classList.contains('hidden')) {
-          renderAdminControl();
-        }
-      } else {
-        // Sessiz yenilemede sadece sayıları ve admin ekranını güncelle
-        renderPollsList();
-        if (!document.getElementById('adminView').classList.contains('hidden')) {
-          renderAdminControl();
-        }
+      renderPollsList();
+      if (!document.getElementById('adminView').classList.contains('hidden')) {
+        renderAdminControl();
       }
     }
 
@@ -283,8 +421,9 @@ Katılmıyorum
       const saved = localStorage.getItem('boluk_backup');
       if (saved) {
         appData = JSON.parse(saved);
+        adminPass = appData.adminPass || "1234";
       } else {
-        appData.personnel = generateDefault184();
+        appData.personnel = defaultRealPersonnel;
         appData.polls = [{
           id: 'anket_1',
           title: 'Hafta Sonu Çarşı & İzin Yoklaması',
@@ -297,10 +436,8 @@ Katılmıyorum
       }
     }
 
-    // Veritabanına Kaydet
     async function pushToDatabase() {
       localStorage.setItem('boluk_backup', JSON.stringify(appData));
-      if (!dbUrl) return;
       try {
         await fetch(`${cleanDbUrl(dbUrl)}/bolukData.json`, {
           method: 'PUT',
@@ -308,16 +445,14 @@ Katılmıyorum
           body: JSON.stringify(appData)
         });
       } catch (e) {
-        showToast("Canlı veritabanına yazılamadı!");
+        showToast("Canlı veritabanına ulaşılamadı!");
       }
     }
 
-    // Sadece tek bir oyu Firebase'e doğrudan yaz (Çakışmayı önler)
     async function pushSingleVote(pollIndex, apolet, choice) {
       localStorage.setItem('boluk_backup', JSON.stringify(appData));
-      if (!dbUrl) return;
       try {
-        await fetch(`${cleanDbUrl(dbUrl)}/bolukData/polls/${pollIndex}/votes/${apolet}.json`, {
+        await fetch(`${cleanDbUrl(dbUrl)}/bolukData/polls/${pollIndex}/votes/${encodeURIComponent(apolet)}.json`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(choice)
@@ -327,7 +462,6 @@ Katılmıyorum
       }
     }
 
-    // Ekran Geçişleri
     function showView(viewId) {
       ['pollsView', 'voteView', 'adminView'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
@@ -336,7 +470,6 @@ Katılmıyorum
       if (viewId === 'pollsView') renderPollsList();
     }
 
-    // Anket Listesini Çiz
     function renderPollsList() {
       const container = document.getElementById('pollsList');
       const total = appData.personnel.length;
@@ -375,7 +508,6 @@ Katılmıyorum
       }).join('');
     }
 
-    // Oy Verme Ekranını Aç
     function openVoteView(pollId) {
       activePollId = pollId;
       const poll = appData.polls.find(p => p.id === pollId);
@@ -437,22 +569,21 @@ Katılmıyorum
       showView('pollsView');
     }
 
-    // Kıdemli Paneli Giriş
     function openAdminGate() {
       if (!adminUnlocked) {
         const p = prompt("Kıdemli Paneli Şifresi (Varsayılan: 1234):");
+        if (p === null) return;
         if (p !== adminPass) return showToast("Hatalı şifre!");
         adminUnlocked = true;
       }
       populateAdminPollSelect();
-      document.getElementById('rosterTextarea').value = appData.personnel.map(p => `${p.apolet} ${p.name}`).join('\n');
-      document.getElementById('firebaseInputUrl').value = dbUrl;
+      document.getElementById('rosterTextarea').value = appData.personnel.map(p => `${p.apolet}\t${p.name}`).join('\n');
       showView('adminView');
       renderAdminControl();
     }
 
     function switchAdminTab(tabId) {
-      ['tabControl', 'tabCreate', 'tabRoster', 'tabFirebase'].forEach(id => {
+      ['tabControl', 'tabCreate', 'tabRoster', 'tabSettings'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
         document.getElementById('btn_' + id).classList.remove('tab-active');
         document.getElementById('btn_' + id).classList.add('text-slate-500');
@@ -464,8 +595,15 @@ Katılmıyorum
 
     function populateAdminPollSelect() {
       const sel = document.getElementById('adminPollSelect');
+      if (!appData.polls || appData.polls.length === 0) {
+        sel.innerHTML = `<option value="">Anket Yok</option>`;
+        return;
+      }
+      const currentVal = sel.value;
       sel.innerHTML = appData.polls.map(p => `<option value="${p.id}">${p.title}</option>`).join('');
-      if (activePollId && appData.polls.some(p => p.id === activePollId)) {
+      if (currentVal && appData.polls.some(p => p.id === currentVal)) {
+        sel.value = currentVal;
+      } else if (activePollId && appData.polls.some(p => p.id === activePollId)) {
         sel.value = activePollId;
       }
     }
@@ -483,14 +621,18 @@ Katılmıyorum
       const sel = document.getElementById('adminPollSelect');
       const pollId = sel.value;
       const poll = appData.polls.find(p => p.id === pollId);
-      if (!poll) return;
+      if (!poll) {
+        document.getElementById('adminSummaryStats').innerHTML = '';
+        document.getElementById('adminOptionBreakdown').innerHTML = '';
+        document.getElementById('adminPersonnelGrid').innerHTML = '';
+        return;
+      }
 
       const votes = poll.votes || {};
       const total = appData.personnel.length;
       const votedList = appData.personnel.filter(p => votes[p.apolet]);
       const missingList = appData.personnel.filter(p => !votes[p.apolet]);
 
-      // Özet Kutuları
       document.getElementById('adminSummaryStats').innerHTML = `
         <div class="bg-slate-50 border border-slate-200 rounded-lg p-2.5">
           <div class="text-xs text-slate-500">Toplam Mevcudu</div>
@@ -506,7 +648,6 @@ Katılmıyorum
         </div>
       `;
 
-      // Seçenek Dağılımı
       const counts = {};
       (poll.options || []).forEach(o => counts[o] = 0);
       Object.values(votes).forEach(v => { if (counts[v] !== undefined) counts[v]++; });
@@ -522,7 +663,6 @@ Katılmıyorum
         `;
       }).join('');
 
-      // Kişi Kartları
       const q = document.getElementById('adminSearchInput').value.toLowerCase().trim();
       let list = appData.personnel.filter(p =>
         p.apolet.toLowerCase().includes(q) || p.name.toLowerCase().includes(q)
@@ -560,7 +700,6 @@ Katılmıyorum
       }).join('');
     }
 
-    // Kıdemli Manuel Oy Atama / Silme
     async function adminToggleVote(pollId, apolet) {
       const pollIndex = appData.polls.findIndex(p => p.id === pollId);
       if (pollIndex === -1) return;
@@ -571,14 +710,14 @@ Katılmıyorum
       const current = poll.votes[apolet];
 
       if (current) {
-        if (confirm(`${person.apolet} ${person.name} kişisinin "${current}" oyunu silmek istiyor musunuz?`)) {
+        if (confirm(`${person.apolet} - ${person.name} personelinin "${current}" oyunu silmek istiyor musunuz?`)) {
           delete poll.votes[apolet];
           await pushToDatabase();
           renderAdminControl();
         }
       } else {
         const optsText = poll.options.map((o, i) => `${i + 1} - ${o}`).join('\n');
-        const inp = prompt(`${person.apolet} ${person.name} adına hangi seçeneği işaretlemek istiyorsunuz? (Sayı girin):\n\n${optsText}`, "1");
+        const inp = prompt(`${person.apolet} - ${person.name} adına hangi seçeneği işaretlemek istiyorsunuz? (Sayı girin):\n\n${optsText}`, "1");
         const idx = parseInt(inp) - 1;
         if (!isNaN(idx) && poll.options[idx]) {
           poll.votes[apolet] = poll.options[idx];
@@ -588,7 +727,6 @@ Katılmıyorum
       }
     }
 
-    // Yeni Anket Oluştur
     async function createNewPoll() {
       const title = document.getElementById('newPollTitle').value.trim();
       const desc = document.getElementById('newPollDesc').value.trim();
@@ -619,6 +757,7 @@ Katılmıyorum
 
     async function deleteCurrentPoll() {
       const pollId = document.getElementById('adminPollSelect').value;
+      if (!pollId) return;
       if (!confirm("Bu anketi silmek istediğinize emin misiniz?")) return;
       appData.polls = appData.polls.filter(p => p.id !== pollId);
       await pushToDatabase();
@@ -627,12 +766,11 @@ Katılmıyorum
       showToast("Anket silindi.");
     }
 
-    // 184 Kişilik Listeyi Kaydet
     async function saveRoster() {
       const lines = document.getElementById('rosterTextarea').value.split('\n').map(l => l.trim()).filter(Boolean);
       const parsed = lines.map((line, idx) => {
         const parts = line.split(/\s+/);
-        const apolet = parts[0] || String(1001 + idx);
+        const apolet = parts[0] || String(idx + 1);
         const name = parts.slice(1).join(' ') || `Personel ${idx + 1}`;
         return { apolet, name };
       });
@@ -642,43 +780,22 @@ Katılmıyorum
       await pushToDatabase();
       document.getElementById('totalPersonnelBadge').textContent = `Toplam: ${appData.personnel.length} Personel`;
       renderAdminControl();
-      showToast(`${parsed.length} personel başarıyla kaydedildi!`);
+      showToast(`${parsed.length} personel güncellendi!`);
     }
 
-    function resetDemoRoster() {
-      const demo = generateDefault184();
-      document.getElementById('rosterTextarea').value = demo.map(p => `${p.apolet} ${p.name}`).join('\n');
-    }
-
-    // Firebase Linkini Kaydet
-    async function saveFirebaseUrl() {
-      const val = cleanDbUrl(document.getElementById('firebaseInputUrl').value);
-      dbUrl = val;
-      localStorage.setItem('boluk_firebase_url', dbUrl);
-      updateDbBadge();
-      if (dbUrl) {
-        await pushToDatabase();
-        showToast("Firebase bağlandı ve mevcut veriler aktarıldı!");
-      } else {
-        showToast("Firebase bağlantısı kaldırıldı.");
-      }
-    }
-
-    function saveAdminPass() {
+    async function saveAdminPass() {
       const p = document.getElementById('adminPassInput').value.trim();
-      if (!p) return;
+      if (!p) return showToast("Geçerli bir şifre girin.");
       adminPass = p;
-      localStorage.setItem('boluk_admin_pass', p);
-      showToast("Şifre güncellendi!");
+      appData.adminPass = p;
+      await pushToDatabase();
+      document.getElementById('adminPassInput').value = '';
+      showToast("Kıdemli şifresi güncellendi!");
     }
 
-    // Paylaşım ve WhatsApp Kopyalama Araçları
     function getShareUrl(pollId) {
       const base = window.location.origin + window.location.pathname;
-      const params = new URLSearchParams();
-      params.set('poll', pollId);
-      if (dbUrl && !SABIT_FIREBASE_URL) params.set('db', dbUrl);
-      return `${base}?${params.toString()}`;
+      return `${base}?poll=${encodeURIComponent(pollId)}`;
     }
 
     function sharePollUrl(pollId) {
@@ -689,7 +806,7 @@ Katılmıyorum
 
     function copyPollLink() {
       const pollId = document.getElementById('adminPollSelect').value;
-      sharePollUrl(pollId);
+      if (pollId) sharePollUrl(pollId);
     }
 
     function copyMissingWhatsApp() {
