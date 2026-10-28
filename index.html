@@ -36,6 +36,19 @@
 
     <!-- 1. ANKET LİSTESİ EKRANI -->
     <section id="pollsView" class="space-y-4">
+      
+      <!-- KULLANICI PROFİL KARTI (Kişi oy verdiğinde cihaz onu hatırlar) -->
+      <div id="userProfileBanner" class="hidden bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between shadow-2xs mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-sm">👤</div>
+          <div>
+            <div class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Hoş Geldiniz</div>
+            <div id="userProfileName" class="text-sm font-extrabold text-slate-900"></div>
+          </div>
+        </div>
+        <button onclick="logoutUser()" class="text-[11px] font-bold text-red-600 bg-white px-3 py-2 rounded-xl shadow-sm border border-red-100 hover:bg-red-50 transition">Değiştir</button>
+      </div>
+
       <!-- Aktif / Eski Sekmeleri -->
       <div class="flex gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-2xs w-fit">
         <button onclick="setPollFilter('active')" id="btnFilterActive" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white transition shadow-2xs">Aktif Anketler (1)</button>
@@ -54,7 +67,21 @@
       </div>
 
       <div class="space-y-4 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200">
-        <div>
+        
+        <!-- Eğer Kişi Biliniyorsa Kilitli Profil Görünür -->
+        <div id="voterLockedDiv" class="hidden flex items-center justify-between bg-blue-100/50 border border-blue-200 rounded-xl p-3.5">
+          <div class="flex items-center gap-3">
+             <div class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">👤</div>
+             <div>
+                <div class="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Kimliğiniz Doğrulandı</div>
+                <div id="lockedVoterName" class="text-sm font-extrabold text-slate-900"></div>
+             </div>
+          </div>
+          <button onclick="logoutUser()" class="text-[10px] font-bold text-red-600 bg-white px-2.5 py-1.5 rounded-lg shadow-sm border border-red-100">Başka Biri</button>
+        </div>
+
+        <!-- Kişi Bilinmiyorsa Arama Çubuğu Görünür -->
+        <div id="voterSelectionDiv">
           <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">1. Apolet No veya İsim ile Arayın</label>
           <input type="text" id="voterSearch" oninput="filterVoterSelect()" placeholder="Örn: 184 veya Abdullah..." class="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900">
           <select id="voterSelect" size="5" class="w-full mt-2.5 bg-white border border-slate-300 rounded-xl p-2 text-sm focus:outline-none shadow-2xs"></select>
@@ -84,6 +111,7 @@
           <div class="flex flex-col sm:flex-row gap-3 justify-between items-center">
             <select id="adminPollSelect" onchange="renderAdminControl()" class="w-full sm:flex-1 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-slate-800 focus:outline-none"></select>
             <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+              <button onclick="togglePollStatusAdmin()" id="adminToggleStatusBtn" class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-2xs"></button>
               <button onclick="copyPollLink()" class="flex-1 sm:flex-none px-3.5 py-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-xs font-bold text-slate-700">🔗 Link</button>
               <button onclick="copyMissingWhatsApp()" class="flex-1 sm:flex-none px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-2xs">📋 Eksikleri Kopyala (WP)</button>
               <button onclick="exportCSV()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold">📥 Excel</button>
@@ -102,8 +130,8 @@
         <div class="flex flex-col sm:flex-row gap-2 justify-between items-center bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
           <div class="flex gap-1 bg-slate-100 p-1 rounded-xl w-full sm:w-auto text-xs font-bold">
             <button onclick="setAdminFilter('all')" id="flt_all" class="flex-1 px-3.5 py-2 rounded-lg bg-white text-slate-900 shadow-2xs">Tümü</button>
-            <button onclick="setAdminFilter('missing')" id="flt_missing" class="flex-1 px-3.5 py-2 rounded-lg text-red-600">İşaretlemeyen (Kırmızı)</button>
-            <button onclick="setAdminFilter('voted')" id="flt_voted" class="flex-1 px-3.5 py-2 rounded-lg text-emerald-600">İşaretleyen (Yeşil)</button>
+            <button onclick="setAdminFilter('missing')" id="flt_missing" class="flex-1 px-3.5 py-2 rounded-lg text-red-600">İşaretlemeyen</button>
+            <button onclick="setAdminFilter('voted')" id="flt_voted" class="flex-1 px-3.5 py-2 rounded-lg text-emerald-600">İşaretleyen</button>
           </div>
           <input type="text" id="adminSearchInput" oninput="renderAdminControl()" placeholder="Apolet veya isim ara..." class="w-full sm:w-64 bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-2 text-sm focus:outline-none">
         </div>
@@ -114,30 +142,52 @@
         <div id="adminPersonnelGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5"></div>
       </div>
 
-      <!-- Sekme 2: Yeni Anket -->
-      <div id="tabCreate" class="hidden bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-2xs">
-        <h3 class="font-bold text-base text-slate-900">Yeni Anket Oluştur</h3>
+      <!-- Sekme 2: Yeni Anket (WhatsApp Tarzı) -->
+      <div id="tabCreate" class="hidden bg-white border border-slate-200 rounded-2xl p-6 space-y-5 shadow-2xs">
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Anket Başlığı</label>
-          <input type="text" id="newPollTitle" placeholder="Örn: Hafta Sonu Çarşı İzni Yoklaması" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+          <h3 class="font-bold text-lg text-slate-900">Yeni Anket Oluştur</h3>
+          <p class="text-xs text-slate-500 mt-1">Anket başlığını ve seçenekleri girerek hemen yayına alabilirsiniz.</p>
+        </div>
+        
+        <div>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Anket Başlığı</label>
+          <input type="text" id="newPollTitle" placeholder="Örn: Hafta Sonu Çarşı İzni Yoklaması" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3.5 text-sm font-bold focus:outline-none focus:border-slate-400">
         </div>
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Açıklama (İsteğe bağlı)</label>
-          <input type="text" id="newPollDesc" placeholder="Örn: Saat 17:00'a kadar herkes işaretlesin." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3.5 py-3 text-sm focus:outline-none">
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-1.5">Açıklama (İsteğe bağlı)</label>
+          <input type="text" id="newPollDesc" placeholder="Örn: Saat 17:00'a kadar herkes işaretlesin." class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none">
         </div>
+
         <div>
-          <label class="block text-xs font-bold uppercase text-slate-600 mb-1">Seçenekler (Her satıra bir seçenek)</label>
-          <textarea id="newPollOptions" rows="4" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-sm focus:outline-none">Çarşıya Çıkacağım
-Birlikte Kalacağım
-İzinli / Raporlu</textarea>
+          <label class="block text-xs font-bold uppercase text-slate-600 mb-2">Seçenekler</label>
+          <div id="newPollOptionsContainer" class="space-y-2">
+            <!-- Varsayılan Seçenekler -->
+            <div class="flex gap-2 items-center">
+              <input type="text" class="pollOptionInput flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="Çarşıya Çıkacağım" placeholder="Seçenek yazın...">
+            </div>
+            <div class="flex gap-2 items-center">
+              <input type="text" class="pollOptionInput flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="Birlikte Kalacağım" placeholder="Seçenek yazın...">
+            </div>
+            <div class="flex gap-2 items-center">
+              <input type="text" class="pollOptionInput flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" value="İzinli / Raporlu" placeholder="Seçenek yazın...">
+              <button onclick="this.parentElement.remove()" class="bg-red-50 text-red-600 hover:bg-red-100 rounded-xl px-4 py-3 font-bold transition">X</button>
+            </div>
+          </div>
+          
+          <button onclick="addPollOption()" class="mt-3 text-sm font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition">
+            <span class="bg-blue-100 text-blue-700 rounded-full w-6 h-6 flex items-center justify-center">+</span> Yeni Seçenek Ekle
+          </button>
         </div>
-        <button onclick="createNewPoll()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3.5 rounded-xl text-sm shadow-sm transition">Anketi Yayınla</button>
+        
+        <div class="pt-2 border-t border-slate-100">
+          <button onclick="createNewPoll()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-base shadow-sm transition">Anketi Yayınla</button>
+        </div>
       </div>
 
       <!-- Sekme 3: Liste -->
       <div id="tabRoster" class="hidden bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-2xs">
         <h3 class="font-bold text-base text-slate-900">Bölük Personel Listesi (184 Kişi)</h3>
-        <textarea id="rosterTextarea" rows="12" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-xs font-mono"></textarea>
+        <textarea id="rosterTextarea" rows="12" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3.5 text-xs font-mono focus:outline-none"></textarea>
         <button onclick="saveRoster()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3.5 rounded-xl text-sm transition">Listeyi Güncelle</button>
       </div>
 
@@ -164,7 +214,7 @@ Birlikte Kalacağım
   <div id="toast" class="fixed bottom-5 right-5 hidden bg-slate-900 text-white text-xs font-bold px-4.5 py-3 rounded-xl shadow-2xl z-50 transition-all"></div>
 
   <script>
-    // FİREBASE BAĞLANTINIZ
+    // CANLI VERİTABANI BAĞLANTINIZ
     const SABIT_FIREBASE_URL = "https://boluk-anket-default-rtdb.firebaseio.com";
 
     let dbUrl = SABIT_FIREBASE_URL;
@@ -173,6 +223,7 @@ Birlikte Kalacağım
     let adminFilter = 'all';
     let pollFilterTab = 'active';
     let activePollId = null;
+    let currentUserApolet = localStorage.getItem('boluk_voter_apolet') || null;
 
     let appData = {
       adminPass: "1234",
@@ -182,190 +233,98 @@ Birlikte Kalacağım
 
     // 184 KİŞİLİK GERÇEK LİSTENİZ
     const defaultRealPersonnel = [
-      { apolet: "1", name: "İsmet Mutlu FAKİR" },
-      { apolet: "2", name: "İlker ÖZTÜRK" },
-      { apolet: "3", name: "Hakan ÇELİK" },
-      { apolet: "4", name: "Salih Yiğit EVEZ" },
-      { apolet: "5", name: "Resul KULAK" },
-      { apolet: "6", name: "Ramazan DENİZ" },
-      { apolet: "7", name: "Alper BAŞCI" },
-      { apolet: "8", name: "İsmail GENÇ" },
-      { apolet: "9", name: "Vefa DENİZHAN" },
-      { apolet: "10", name: "Bekir İlker ERDEM" },
-      { apolet: "11", name: "Azmi KOÇ" },
-      { apolet: "12", name: "Hüseyin ÇAPRAZ" },
-      { apolet: "13", name: "Köksal BAL" },
-      { apolet: "14", name: "Yakup KILIÇ" },
-      { apolet: "15", name: "Harun DENİZ" },
-      { apolet: "16", name: "Aykut MUTLU" },
-      { apolet: "17", name: "Muhammet İkbal DOĞAN" },
-      { apolet: "18", name: "Ali KILIÇ" },
-      { apolet: "19", name: "Sefa KARA" },
-      { apolet: "20", name: "Adem TURAN" },
-      { apolet: "21", name: "Mehmet SAKMAN" },
-      { apolet: "22", name: "Muhammed İNCİR" },
-      { apolet: "23", name: "Ali TÜRK" },
-      { apolet: "24", name: "Melih AYDIN" },
-      { apolet: "25", name: "Abdulgani AKBAŞ" },
-      { apolet: "26", name: "Metin NESNE" },
-      { apolet: "27", name: "Emir BESTEL" },
-      { apolet: "28", name: "Hasan ÖZCAN" },
-      { apolet: "29", name: "Mücahit DURDU" },
-      { apolet: "30", name: "Enes AKSU" },
-      { apolet: "31", name: "Yasin ŞERAS" },
-      { apolet: "32", name: "Muhiddin GÜRSEL" },
-      { apolet: "33", name: "Tayip ŞENYİĞİT" },
-      { apolet: "34", name: "Mehmet Sadık OKTAY" },
-      { apolet: "35", name: "Feridun ALBAKIR" },
-      { apolet: "36", name: "Mücahit YÜKSEL" },
-      { apolet: "37", name: "Sefa SAĞLAM" },
-      { apolet: "38", name: "Mustafa SALCI" },
-      { apolet: "39", name: "Kürşat CERRAH" },
-      { apolet: "40", name: "Muhammet Gökhan BURAKLAR" },
-      { apolet: "41", name: "Fuat TAT" },
-      { apolet: "42", name: "Muhammed Kasım ÖZCAN" },
-      { apolet: "43", name: "Uğur Ege ŞAHİN" },
-      { apolet: "44", name: "Burak ÖZEL" },
-      { apolet: "45", name: "Muhammet KARADENİZ" },
-      { apolet: "46", name: "Berk ATAR" },
-      { apolet: "47", name: "Burak DÜZENLİ" },
-      { apolet: "48", name: "Emre BOLAT" },
-      { apolet: "49", name: "Nazım ÇETİNEL" },
-      { apolet: "50", name: "Bilal BOZKURT" },
-      { apolet: "51", name: "Sezer ARSLAN" },
-      { apolet: "52", name: "Fatih BALI" },
-      { apolet: "53", name: "Muhammet Sait CAYMAZ" },
-      { apolet: "54", name: "Hasan SARITEPE" },
-      { apolet: "55", name: "Yusuf Ziya ÖZTÜRK" },
-      { apolet: "56", name: "Halis Berk YILDIZ" },
-      { apolet: "57", name: "Hasan Hüseyin SALMAN" },
-      { apolet: "58", name: "Mert KAYA" },
-      { apolet: "59", name: "Metin YILDIRIM" },
-      { apolet: "60", name: "Yavuz YILMAZ" },
-      { apolet: "61", name: "Gökhan ÖZDEMİR" },
-      { apolet: "62", name: "Selahi KONAK" },
-      { apolet: "63", name: "Cengiz CANYURT" },
-      { apolet: "64", name: "Yusuf İzzet YILDIRIM" },
-      { apolet: "65", name: "Samet YÜKSEL" },
-      { apolet: "66", name: "Umut ÇEKİN" },
-      { apolet: "67", name: "Arda ŞEN" },
-      { apolet: "68", name: "Muhammet Furkan BOZGEYİK" },
-      { apolet: "69", name: "Ekrem AYYILDIZ" },
-      { apolet: "70", name: "Orhan KURT" },
-      { apolet: "71", name: "Emre YİĞİT" },
-      { apolet: "72", name: "Ahmet EĞİLMEZ" },
-      { apolet: "73", name: "Faruk DERE" },
-      { apolet: "74", name: "İlyas İÇEN" },
-      { apolet: "75", name: "Abdulkadir SIĞIRCI" },
-      { apolet: "76", name: "Ahmet TAŞHANLI" },
-      { apolet: "77", name: "Halis ÇILDIR" },
-      { apolet: "78", name: "Ali Osman KAYA" },
-      { apolet: "79", name: "Davut BEGEÇ" },
-      { apolet: "80", name: "Halil Nurullah GÜNGÖR" },
-      { apolet: "81", name: "Tayfun BADURLUOĞLU" },
-      { apolet: "82", name: "Ensar Gökbuğra ALEMDAR" },
-      { apolet: "83", name: "Ömer Faruk BULUT" },
-      { apolet: "84", name: "Samet TOPKARA" },
-      { apolet: "85", name: "Muhammed Yusuf KOYUNCU" },
-      { apolet: "86", name: "Ali Can MEMİŞOĞLU" },
-      { apolet: "87", name: "Ahmet Turan ÇALÇİK" },
-      { apolet: "88", name: "Tunahan KAYADELEN" },
-      { apolet: "89", name: "Furkan GÖKSU" },
-      { apolet: "90", name: "Ümit SOYLU" },
-      { apolet: "91", name: "Rafet DEDE" },
-      { apolet: "92", name: "Yasin AKŞAHİN" },
-      { apolet: "93", name: "Mustafa AKGÜN" },
-      { apolet: "94", name: "Mustafa KARABOĞAZ" },
-      { apolet: "95", name: "Emre GEZER" },
-      { apolet: "96", name: "Oğuzhan KARAÇAY" },
-      { apolet: "97", name: "Mehmet YILDIRIM" },
-      { apolet: "98", name: "Mustafa BİÇİCİ" },
-      { apolet: "99", name: "Doğan DEMİR" },
-      { apolet: "100", name: "Volkan YILMAZ" },
-      { apolet: "101", name: "Muhammet ALTIAY" },
-      { apolet: "102", name: "Serhat HIRACI" },
-      { apolet: "103", name: "Vedat ÇİFTÇİ" },
-      { apolet: "104", name: "Mehmet Zeki SERTDEMİR" },
-      { apolet: "105", name: "Melih ALTAŞ" },
-      { apolet: "106", name: "İsmet İslam BAYBURT" },
-      { apolet: "107", name: "Atakan CEYHUN" },
-      { apolet: "108", name: "Servet KAMACI" },
-      { apolet: "109", name: "Alparslan YAYLACI" },
-      { apolet: "110", name: "Aykut GÜLER" },
-      { apolet: "111", name: "Burak KİŞİ" },
-      { apolet: "112", name: "Volkan ÖZKAN" },
-      { apolet: "113", name: "Sait Tunahan CENGİZ" },
-      { apolet: "114", name: "Kerem ÖZTÜRK" },
-      { apolet: "115", name: "Mehmet DEKTAŞ" },
-      { apolet: "116", name: "Emre Can ÜSTÜN" },
-      { apolet: "117", name: "İsmail Mert KARAGÖZOĞLU" },
-      { apolet: "118", name: "Sezer YOLCU" },
-      { apolet: "119", name: "Furkan KAYIKÇI" },
-      { apolet: "120", name: "Mustafa ÇAKIR" },
-      { apolet: "121", name: "Abdülbaki SERDAROĞLU" },
-      { apolet: "122", name: "Tuncay KÜÇÜK" },
-      { apolet: "123", name: "Ahmet ÖZBUNAR" },
-      { apolet: "124", name: "Muhammed Yaşar BASTEM" },
-      { apolet: "125", name: "Abdülkadir ERDURMUŞ" },
-      { apolet: "126", name: "Buğrahan GÜLER" },
-      { apolet: "127", name: "Barış BAŞ" },
-      { apolet: "128", name: "Yunus BABİ" },
-      { apolet: "129", name: "Talha TIĞCI" },
-      { apolet: "130", name: "Hüseyin TANRIKULU" },
-      { apolet: "131", name: "Eyüp KAYAALP" },
-      { apolet: "132", name: "Burakcan ERGÜL" },
-      { apolet: "133", name: "Emre ERDOĞAN" },
-      { apolet: "134", name: "Ömer GÖKTÜRK" },
-      { apolet: "135", name: "Ferhat AKSAKALLI" },
-      { apolet: "136", name: "Burak CEYLAN" },
-      { apolet: "137", name: "Yusuf BIYIKLI" },
-      { apolet: "138", name: "İbrahim Enes ÜNLÜ" },
-      { apolet: "139", name: "Mahmut TEK" },
-      { apolet: "140", name: "Yusuf MERAL" },
-      { apolet: "141", name: "Mutlucan IŞIK" },
-      { apolet: "142", name: "Sabri ŞEN" },
-      { apolet: "143", name: "Muhammed Enes DÖĞER" },
-      { apolet: "144", name: "Hazar Eren YÜZÜAK" },
-      { apolet: "145", name: "Mehmet TOPAL" },
-      { apolet: "146", name: "Ahmet ŞEN" },
-      { apolet: "147", name: "Samet ÖZBİÇİCİ" },
-      { apolet: "148", name: "Emre ALPASLAN" },
-      { apolet: "149", name: "Adem KARACA" },
-      { apolet: "150", name: "Muhammed Talha PİSTİL" },
-      { apolet: "151", name: "Hasan Bilgehan ÜN" },
-      { apolet: "152", name: "Akif ÇOMULU" },
-      { apolet: "153", name: "Serhat KAFA" },
-      { apolet: "154", name: "Mete ATEŞ" },
-      { apolet: "155", name: "Musa YILDIRIM" },
-      { apolet: "156", name: "Murat KAYA" },
-      { apolet: "157", name: "Salih TOSUN" },
-      { apolet: "158", name: "Yunus ORDU" },
-      { apolet: "159", name: "Güngör GÜNDİNÇ" },
-      { apolet: "160", name: "Adem ÇOLAK" },
-      { apolet: "161", name: "Turan YILDIRIM" },
-      { apolet: "162", name: "Berat KAYA" },
-      { apolet: "163", name: "Selçuk KAYIK" },
-      { apolet: "164", name: "Okan Yasin GÖMLEKSİZ" },
-      { apolet: "165", name: "Muharrem KABALAK" },
-      { apolet: "166", name: "Ahmet KAZI" },
-      { apolet: "167", name: "Semih HAYAL" },
-      { apolet: "168", name: "Ömürhan Halil DENİZ" },
-      { apolet: "169", name: "Haci Bekir DEMİREL" },
-      { apolet: "170", name: "Abdullah İhsan TİYEK" },
-      { apolet: "171", name: "Erkan PUL" },
-      { apolet: "172", name: "Abdulkadir KAPLAN" },
-      { apolet: "173", name: "Faruk GÜN" },
-      { apolet: "174", name: "Hüseyin YAKAR" },
-      { apolet: "175", name: "Sinan AÇIKGÖZ" },
-      { apolet: "176", name: "Burak ŞAYIK" },
-      { apolet: "177", name: "İrfan AĞDAĞ" },
-      { apolet: "178", name: "Hüseyin AKSÜT" },
-      { apolet: "179", name: "Furkan TEPELİ" },
-      { apolet: "180", name: "Burak ÇİV" },
-      { apolet: "181", name: "Serhat ARVAS" },
-      { apolet: "182", name: "Enes ÇAVAŞ" },
-      { apolet: "183", name: "Abdulkadir AY" },
-      { apolet: "184", name: "Abdullah ARVAS" }
+      { apolet: "1", name: "İsmet Mutlu FAKİR" }, { apolet: "2", name: "İlker ÖZTÜRK" },
+      { apolet: "3", name: "Hakan ÇELİK" }, { apolet: "4", name: "Salih Yiğit EVEZ" },
+      { apolet: "5", name: "Resul KULAK" }, { apolet: "6", name: "Ramazan DENİZ" },
+      { apolet: "7", name: "Alper BAŞCI" }, { apolet: "8", name: "İsmail GENÇ" },
+      { apolet: "9", name: "Vefa DENİZHAN" }, { apolet: "10", name: "Bekir İlker ERDEM" },
+      { apolet: "11", name: "Azmi KOÇ" }, { apolet: "12", name: "Hüseyin ÇAPRAZ" },
+      { apolet: "13", name: "Köksal BAL" }, { apolet: "14", name: "Yakup KILIÇ" },
+      { apolet: "15", name: "Harun DENİZ" }, { apolet: "16", name: "Aykut MUTLU" },
+      { apolet: "17", name: "Muhammet İkbal DOĞAN" }, { apolet: "18", name: "Ali KILIÇ" },
+      { apolet: "19", name: "Sefa KARA" }, { apolet: "20", name: "Adem TURAN" },
+      { apolet: "21", name: "Mehmet SAKMAN" }, { apolet: "22", name: "Muhammed İNCİR" },
+      { apolet: "23", name: "Ali TÜRK" }, { apolet: "24", name: "Melih AYDIN" },
+      { apolet: "25", name: "Abdulgani AKBAŞ" }, { apolet: "26", name: "Metin NESNE" },
+      { apolet: "27", name: "Emir BESTEL" }, { apolet: "28", name: "Hasan ÖZCAN" },
+      { apolet: "29", name: "Mücahit DURDU" }, { apolet: "30", name: "Enes AKSU" },
+      { apolet: "31", name: "Yasin ŞERAS" }, { apolet: "32", name: "Muhiddin GÜRSEL" },
+      { apolet: "33", name: "Tayip ŞENYİĞİT" }, { apolet: "34", name: "Mehmet Sadık OKTAY" },
+      { apolet: "35", name: "Feridun ALBAKIR" }, { apolet: "36", name: "Mücahit YÜKSEL" },
+      { apolet: "37", name: "Sefa SAĞLAM" }, { apolet: "38", name: "Mustafa SALCI" },
+      { apolet: "39", name: "Kürşat CERRAH" }, { apolet: "40", name: "Muhammet Gökhan BURAKLAR" },
+      { apolet: "41", name: "Fuat TAT" }, { apolet: "42", name: "Muhammed Kasım ÖZCAN" },
+      { apolet: "43", name: "Uğur Ege ŞAHİN" }, { apolet: "44", name: "Burak ÖZEL" },
+      { apolet: "45", name: "Muhammet KARADENİZ" }, { apolet: "46", name: "Berk ATAR" },
+      { apolet: "47", name: "Burak DÜZENLİ" }, { apolet: "48", name: "Emre BOLAT" },
+      { apolet: "49", name: "Nazım ÇETİNEL" }, { apolet: "50", name: "Bilal BOZKURT" },
+      { apolet: "51", name: "Sezer ARSLAN" }, { apolet: "52", name: "Fatih BALI" },
+      { apolet: "53", name: "Muhammet Sait CAYMAZ" }, { apolet: "54", name: "Hasan SARITEPE" },
+      { apolet: "55", name: "Yusuf Ziya ÖZTÜRK" }, { apolet: "56", name: "Halis Berk YILDIZ" },
+      { apolet: "57", name: "Hasan Hüseyin SALMAN" }, { apolet: "58", name: "Mert KAYA" },
+      { apolet: "59", name: "Metin YILDIRIM" }, { apolet: "60", name: "Yavuz YILMAZ" },
+      { apolet: "61", name: "Gökhan ÖZDEMİR" }, { apolet: "62", name: "Selahi KONAK" },
+      { apolet: "63", name: "Cengiz CANYURT" }, { apolet: "64", name: "Yusuf İzzet YILDIRIM" },
+      { apolet: "65", name: "Samet YÜKSEL" }, { apolet: "66", name: "Umut ÇEKİN" },
+      { apolet: "67", name: "Arda ŞEN" }, { apolet: "68", name: "Muhammet Furkan BOZGEYİK" },
+      { apolet: "69", name: "Ekrem AYYILDIZ" }, { apolet: "70", name: "Orhan KURT" },
+      { apolet: "71", name: "Emre YİĞİT" }, { apolet: "72", name: "Ahmet EĞİLMEZ" },
+      { apolet: "73", name: "Faruk DERE" }, { apolet: "74", name: "İlyas İÇEN" },
+      { apolet: "75", name: "Abdulkadir SIĞIRCI" }, { apolet: "76", name: "Ahmet TAŞHANLI" },
+      { apolet: "77", name: "Halis ÇILDIR" }, { apolet: "78", name: "Ali Osman KAYA" },
+      { apolet: "79", name: "Davut BEGEÇ" }, { apolet: "80", name: "Halil Nurullah GÜNGÖR" },
+      { apolet: "81", name: "Tayfun BADURLUOĞLU" }, { apolet: "82", name: "Ensar Gökbuğra ALEMDAR" },
+      { apolet: "83", name: "Ömer Faruk BULUT" }, { apolet: "84", name: "Samet TOPKARA" },
+      { apolet: "85", name: "Muhammed Yusuf KOYUNCU" }, { apolet: "86", name: "Ali Can MEMİŞOĞLU" },
+      { apolet: "87", name: "Ahmet Turan ÇALÇİK" }, { apolet: "88", name: "Tunahan KAYADELEN" },
+      { apolet: "89", name: "Furkan GÖKSU" }, { apolet: "90", name: "Ümit SOYLU" },
+      { apolet: "91", name: "Rafet DEDE" }, { apolet: "92", name: "Yasin AKŞAHİN" },
+      { apolet: "93", name: "Mustafa AKGÜN" }, { apolet: "94", name: "Mustafa KARABOĞAZ" },
+      { apolet: "95", name: "Emre GEZER" }, { apolet: "96", name: "Oğuzhan KARAÇAY" },
+      { apolet: "97", name: "Mehmet YILDIRIM" }, { apolet: "98", name: "Mustafa BİÇİCİ" },
+      { apolet: "99", name: "Doğan DEMİR" }, { apolet: "100", name: "Volkan YILMAZ" },
+      { apolet: "101", name: "Muhammet ALTIAY" }, { apolet: "102", name: "Serhat HIRACI" },
+      { apolet: "103", name: "Vedat ÇİFTÇİ" }, { apolet: "104", name: "Mehmet Zeki SERTDEMİR" },
+      { apolet: "105", name: "Melih ALTAŞ" }, { apolet: "106", name: "İsmet İslam BAYBURT" },
+      { apolet: "107", name: "Atakan CEYHUN" }, { apolet: "108", name: "Servet KAMACI" },
+      { apolet: "109", name: "Alparslan YAYLACI" }, { apolet: "110", name: "Aykut GÜLER" },
+      { apolet: "111", name: "Burak KİŞİ" }, { apolet: "112", name: "Volkan ÖZKAN" },
+      { apolet: "113", name: "Sait Tunahan CENGİZ" }, { apolet: "114", name: "Kerem ÖZTÜRK" },
+      { apolet: "115", name: "Mehmet DEKTAŞ" }, { apolet: "116", name: "Emre Can ÜSTÜN" },
+      { apolet: "117", name: "İsmail Mert KARAGÖZOĞLU" }, { apolet: "118", name: "Sezer YOLCU" },
+      { apolet: "119", name: "Furkan KAYIKÇI" }, { apolet: "120", name: "Mustafa ÇAKIR" },
+      { apolet: "121", name: "Abdülbaki SERDAROĞLU" }, { apolet: "122", name: "Tuncay KÜÇÜK" },
+      { apolet: "123", name: "Ahmet ÖZBUNAR" }, { apolet: "124", name: "Muhammed Yaşar BASTEM" },
+      { apolet: "125", name: "Abdülkadir ERDURMUŞ" }, { apolet: "126", name: "Buğrahan GÜLER" },
+      { apolet: "127", name: "Barış BAŞ" }, { apolet: "128", name: "Yunus BABİ" },
+      { apolet: "129", name: "Talha TIĞCI" }, { apolet: "130", name: "Hüseyin TANRIKULU" },
+      { apolet: "131", name: "Eyüp KAYAALP" }, { apolet: "132", name: "Burakcan ERGÜL" },
+      { apolet: "133", name: "Emre ERDOĞAN" }, { apolet: "134", name: "Ömer GÖKTÜRK" },
+      { apolet: "135", name: "Ferhat AKSAKALLI" }, { apolet: "136", name: "Burak CEYLAN" },
+      { apolet: "137", name: "Yusuf BIYIKLI" }, { apolet: "138", name: "İbrahim Enes ÜNLÜ" },
+      { apolet: "139", name: "Mahmut TEK" }, { apolet: "140", name: "Yusuf MERAL" },
+      { apolet: "141", name: "Mutlucan IŞIK" }, { apolet: "142", name: "Sabri ŞEN" },
+      { apolet: "143", name: "Muhammed Enes DÖĞER" }, { apolet: "144", name: "Hazar Eren YÜZÜAK" },
+      { apolet: "145", name: "Mehmet TOPAL" }, { apolet: "146", name: "Ahmet ŞEN" },
+      { apolet: "147", name: "Samet ÖZBİÇİCİ" }, { apolet: "148", name: "Emre ALPASLAN" },
+      { apolet: "149", name: "Adem KARACA" }, { apolet: "150", name: "Muhammed Talha PİSTİL" },
+      { apolet: "151", name: "Hasan Bilgehan ÜN" }, { apolet: "152", name: "Akif ÇOMULU" },
+      { apolet: "153", name: "Serhat KAFA" }, { apolet: "154", name: "Mete ATEŞ" },
+      { apolet: "155", name: "Musa YILDIRIM" }, { apolet: "156", name: "Murat KAYA" },
+      { apolet: "157", name: "Salih TOSUN" }, { apolet: "158", name: "Yunus ORDU" },
+      { apolet: "159", name: "Güngör GÜNDİNÇ" }, { apolet: "160", name: "Adem ÇOLAK" },
+      { apolet: "161", name: "Turan YILDIRIM" }, { apolet: "162", name: "Berat KAYA" },
+      { apolet: "163", name: "Selçuk KAYIK" }, { apolet: "164", name: "Okan Yasin GÖMLEKSİZ" },
+      { apolet: "165", name: "Muharrem KABALAK" }, { apolet: "166", name: "Ahmet KAZI" },
+      { apolet: "167", name: "Semih HAYAL" }, { apolet: "168", name: "Ömürhan Halil DENİZ" },
+      { apolet: "169", name: "Haci Bekir DEMİREL" }, { apolet: "170", name: "Abdullah İhsan TİYEK" },
+      { apolet: "171", name: "Erkan PUL" }, { apolet: "172", name: "Abdulkadir KAPLAN" },
+      { apolet: "173", name: "Faruk GÜN" }, { apolet: "174", name: "Hüseyin YAKAR" },
+      { apolet: "175", name: "Sinan AÇIKGÖZ" }, { apolet: "176", name: "Burak ŞAYIK" },
+      { apolet: "177", name: "İrfan AĞDAĞ" }, { apolet: "178", name: "Hüseyin AKSÜT" },
+      { apolet: "179", name: "Furkan TEPELİ" }, { apolet: "180", name: "Burak ÇİV" },
+      { apolet: "181", name: "Serhat ARVAS" }, { apolet: "182", name: "Enes ÇAVAŞ" },
+      { apolet: "183", name: "Abdulkadir AY" }, { apolet: "184", name: "Abdullah ARVAS" }
     ];
 
     async function initApp() {
@@ -412,6 +371,7 @@ Birlikte Kalacağım
       }
 
       document.getElementById('totalPersonnelBadge').textContent = `${appData.personnel.length} Kişi`;
+      if (!silent) renderUserProfile();
       renderPollsList();
       if (!document.getElementById('adminView').classList.contains('hidden')) {
         renderAdminControl();
@@ -461,12 +421,44 @@ Birlikte Kalacağım
       }
     }
 
+    // Profil Yöneticisi
+    function renderUserProfile() {
+      const banner = document.getElementById('userProfileBanner');
+      if (currentUserApolet) {
+        const person = appData.personnel.find(p => p.apolet === currentUserApolet);
+        if (person) {
+          banner.classList.remove('hidden');
+          document.getElementById('userProfileName').textContent = `${person.apolet} - ${person.name}`;
+        } else {
+          banner.classList.add('hidden');
+        }
+      } else {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function logoutUser() {
+      currentUserApolet = null;
+      localStorage.removeItem('boluk_voter_apolet');
+      renderUserProfile();
+      
+      document.getElementById('voterLockedDiv').classList.add('hidden');
+      document.getElementById('voterSelectionDiv').classList.remove('hidden');
+      document.getElementById('voterSearch').value = '';
+      filterVoterSelect();
+      
+      showToast("Kimlik sıfırlandı, listeden tekrar seçebilirsiniz.");
+    }
+
     function showView(viewId) {
       ['pollsView', 'voteView', 'adminView'].forEach(id => {
         document.getElementById(id).classList.add('hidden');
       });
       document.getElementById(viewId).classList.remove('hidden');
-      if (viewId === 'pollsView') renderPollsList();
+      if (viewId === 'pollsView') {
+        renderUserProfile();
+        renderPollsList();
+      }
     }
 
     function setPollFilter(tab) {
@@ -515,9 +507,6 @@ Birlikte Kalacağım
                 <h2 class="font-bold text-base sm:text-lg text-slate-900">${poll.title}</h2>
                 <span class="text-xs text-slate-400 font-medium">${poll.createdAt || ''}</span>
               </div>
-              <button onclick="togglePollStatus('${poll.id}')" class="text-[11px] px-3 py-1.5 rounded-xl border font-bold transition ${poll.status === 'old' ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200'}">
-                ${poll.status === 'old' ? 'Arşivde (Aktif Yap)' : 'Arşive Taşı'}
-              </button>
             </div>
 
             <!-- Sayılar (Katılan / Kalan / Toplam) -->
@@ -546,13 +535,15 @@ Birlikte Kalacağım
       }).join('');
     }
 
-    async function togglePollStatus(pollId) {
+    // Kıdemli Paneli Arşiv Kontrolü
+    async function togglePollStatusAdmin() {
+      const pollId = document.getElementById('adminPollSelect').value;
       const poll = appData.polls.find(p => p.id === pollId);
       if (!poll) return;
       poll.status = poll.status === 'old' ? 'active' : 'old';
       await pushToDatabase();
-      renderPollsList();
-      showToast("Anket durumu güncellendi.");
+      renderAdminControl();
+      showToast(poll.status === 'old' ? "Anket Arşive Taşındı!" : "Anket Aktife Alındı!");
     }
 
     function openVoteView(pollId) {
@@ -562,8 +553,24 @@ Birlikte Kalacağım
 
       document.getElementById('votePollTitle').textContent = poll.title;
       document.getElementById('votePollDesc').textContent = poll.desc || 'Lütfen durumunuzu seçin.';
-      document.getElementById('voterSearch').value = '';
-      filterVoterSelect();
+      
+      // Kullanıcı biliniyorsa kilitli profili göster
+      if (currentUserApolet && appData.personnel.some(p => p.apolet === currentUserApolet)) {
+        document.getElementById('voterSelectionDiv').classList.add('hidden');
+        document.getElementById('voterLockedDiv').classList.remove('hidden');
+        
+        const p = appData.personnel.find(p => p.apolet === currentUserApolet);
+        document.getElementById('lockedVoterName').textContent = `${p.apolet} - ${p.name}`;
+        
+        document.getElementById('voterSearch').value = p.apolet;
+        filterVoterSelect();
+        document.getElementById('voterSelect').value = p.apolet;
+      } else {
+        document.getElementById('voterSelectionDiv').classList.remove('hidden');
+        document.getElementById('voterLockedDiv').classList.add('hidden');
+        document.getElementById('voterSearch').value = '';
+        filterVoterSelect();
+      }
 
       const optsContainer = document.getElementById('voteOptionsList');
       optsContainer.innerHTML = (poll.options || []).map((opt, idx) => `
@@ -593,7 +600,11 @@ Birlikte Kalacağım
     }
 
     async function submitVote() {
-      const apolet = document.getElementById('voterSelect').value;
+      let apolet = currentUserApolet;
+      if (!apolet) {
+        apolet = document.getElementById('voterSelect').value;
+      }
+      
       const selectedOpt = document.querySelector('input[name="pollOption"]:checked');
       if (!apolet) return showToast("Lütfen isminizi veya apoletinizi seçin.");
       if (!selectedOpt) return showToast("Lütfen bir seçenek işaretleyin.");
@@ -609,6 +620,12 @@ Birlikte Kalacağım
       appData.polls[pollIndex].votes[apolet] = selectedOpt.value;
 
       await pushSingleVote(pollIndex, apolet, selectedOpt.value);
+
+      // Cihazı bu kullanıcıya kilitle
+      if (!currentUserApolet) {
+        currentUserApolet = apolet;
+        localStorage.setItem('boluk_voter_apolet', apolet);
+      }
 
       btn.textContent = "Oyumu Kaydet ve Gönder";
       btn.disabled = false;
@@ -672,6 +689,16 @@ Birlikte Kalacağım
       const total = appData.personnel.length;
       const votedList = appData.personnel.filter(p => votes[p.apolet]);
       const missingList = appData.personnel.filter(p => !votes[p.apolet]);
+
+      // Arşiv Durumu Butonu Güncelleme
+      const statusBtn = document.getElementById('adminToggleStatusBtn');
+      if(poll.status === 'old') {
+        statusBtn.textContent = '📂 Arşivden Çıkar';
+        statusBtn.className = "flex-1 sm:flex-none px-3.5 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded-xl text-xs font-bold transition shadow-2xs";
+      } else {
+        statusBtn.textContent = '📦 Arşive Taşı';
+        statusBtn.className = "flex-1 sm:flex-none px-3.5 py-2 bg-amber-100 hover:bg-amber-200 text-amber-800 rounded-xl text-xs font-bold transition shadow-2xs";
+      }
 
       document.getElementById('adminSummaryStats').innerHTML = `
         <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
@@ -769,10 +796,28 @@ Birlikte Kalacağım
       }
     }
 
+    // Seçenek Ekleme Fonksiyonu
+    function addPollOption() {
+      const container = document.getElementById('newPollOptionsContainer');
+      const div = document.createElement('div');
+      div.className = 'flex gap-2 items-center';
+      div.innerHTML = `
+        <input type="text" class="pollOptionInput flex-1 bg-white border border-slate-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition" placeholder="Yeni Seçenek">
+        <button onclick="this.parentElement.remove()" class="bg-red-50 text-red-600 hover:bg-red-100 rounded-xl px-4 py-3 font-bold transition">X</button>
+      `;
+      container.appendChild(div);
+    }
+
+    // Anket Yayınlama
     async function createNewPoll() {
       const title = document.getElementById('newPollTitle').value.trim();
       const desc = document.getElementById('newPollDesc').value.trim();
-      const opts = document.getElementById('newPollOptions').value.split('\n').map(s => s.trim()).filter(Boolean);
+      
+      const inputs = document.querySelectorAll('.pollOptionInput');
+      const opts = [];
+      inputs.forEach(inp => {
+        if(inp.value.trim() !== '') opts.push(inp.value.trim());
+      });
 
       if (!title || opts.length < 1) return showToast("Başlık ve en az 1 seçenek girin.");
 
